@@ -1,0 +1,1 @@
+I need to find what the best vector representation for input and output for the network should be.
