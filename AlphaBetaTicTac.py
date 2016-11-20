@@ -1,5 +1,4 @@
 # Tic Tac Toe
-
 # The TicTacToe base game is provided here.
 #http://inventwithpython.com/tictactoe.py
 
@@ -210,6 +209,7 @@ while True:
             # Player's turn.
             drawBoard(theBoard)
             move = getPlayerMove(theBoard)
+
             makeMove(theBoard, playerLetter, move)
 
             if isWinner(theBoard, playerLetter):
