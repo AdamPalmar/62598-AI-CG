@@ -1,15 +1,20 @@
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.layers.advanced_activations import LeakyReLU
 import numpy as np
 
 
 def network_model():
-    model = Sequential()
-    model.add(Dense(12, input_dim=9, init='uniform', activation='relu'))
-    model.add(Dense(32, init='uniform', activation='relu'))
-    model.add(Dense(32, init='uniform', activation='relu'))
-    model.add(Dense(9, init='uniform', activation='softmax'))
+    activation_function = LeakyReLU(alpha=0.2)
 
-    model.compile(loss='mean_squared_error', optimizer='adam')
+    model = Sequential()
+
+    model.add(Dense(9, input_dim=9, init='normal', activation=activation_function))
+    model.add(Dense(64, init='normal', activation=activation_function))
+    model.add(Dense(128, init='normal', activation=activation_function))
+    model.add(Dense(256, init='normal', activation=activation_function))
+    model.add(Dense(9, init='normal', activation='softmax'))
+
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
     return model

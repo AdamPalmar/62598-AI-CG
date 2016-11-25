@@ -12,7 +12,7 @@ def init_training_game_matrix(size):
 
 
 def init_end_game_status_vector(size):
-    return np.zeros(shape=(size, 4), dtype='int32')
+    return np.zeros(shape=(size, 5), dtype='int32')
 
 
 def set_result_of_game(index_game, game_status_matrix, result_of_game, start_index, end_index, first_player):
@@ -21,7 +21,9 @@ def set_result_of_game(index_game, game_status_matrix, result_of_game, start_ind
     game_status_matrix[index_game, 0] = result_of_game
     game_status_matrix[index_game, 1] = start_index
     game_status_matrix[index_game, 2] = end_index
+    game_status_matrix[index_game, 4] = end_index - start_index
 
+    # print(end_index - start_index ,"Len game")
     if first_player == "player":
         game_status_matrix[index_game, 3] = 1
     else:
@@ -81,3 +83,8 @@ def test():
     add_move_to_game_matrix(8, training, board)
 
     print(training)
+    print("-"*5)
+    print(board)
+    print(-board)
+
+# test()
