@@ -5,7 +5,16 @@ import numpy as np
 
 
 def network_model():
-    activation_function = LeakyReLU(alpha=0.2)
+    model = create_model()
+
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+    return model
+
+
+def create_model():
+    # activation_function = LeakyReLU(alpha=0.2,name='leakyRelu')
+    activation_function = 'relu'
 
     model = Sequential()
 
@@ -14,7 +23,5 @@ def network_model():
     model.add(Dense(128, init='normal', activation=activation_function))
     model.add(Dense(256, init='normal', activation=activation_function))
     model.add(Dense(9, init='normal', activation='softmax'))
-
-    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
     return model

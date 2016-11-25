@@ -7,8 +7,9 @@
 import random
 import vector_game_state as vgs
 import numpy as np
-
+from keras.models import Sequential
 import network_training as network
+from keras.models import model_from_json
 
 
 def drawBoard(board):
@@ -437,8 +438,8 @@ def run_game_vs_network(network):
         # Reset the board
         theBoard = [' '] * 10
         playerLetter, computerLetter = inputPlayerLetter()
-        # turn = whoGoesFirst()
-        turn = "computer"
+        turn = whoGoesFirst()
+        # turn = "computer"
         print('The ' + turn + ' will go first.')
         gameIsPlaying = True
         board_vector = vgs.init_board_state_vector()
@@ -520,16 +521,30 @@ def train_loop(model, random_move_chance, num_games):
                   nb_epoch=1,
                   batch_size=1)
 
+def load_model():
+    # load json and create model
+    loaded_model = network.create_model()
+    loaded_model.load_weights("model.h5")
+    return loaded_model
+
+def save_model(model):
+    # serialize model to JSON
+
+    model.save('model.h5')
+
+
+
 
 def train_network():
     max_index, train_games_matrix, result_game_matrix, num_tie_games = run_game_loop_train(show_print_output=False,
                                                                                            is_training_game=True,
-                                                                                           num_games=10000,
+                                                                                           num_games=1,
                                                                                            train_matrix_size=100000000)
     # init model
     model = network.network_model()
 
     # First run
+
 
     total_train, total_test = init_train_test_matrix(result_game_matrix)
     fill_train_test_matrix(total_train, total_test, result_game_matrix, train_games_matrix, num_tie_games)
@@ -537,9 +552,11 @@ def train_network():
               nb_epoch=1,
               batch_size=1)
 
-    for random_chance in range(2, 15):
+    for random_chance in range(2, 18):
         print("-" * 30 + "Starting run " + str(random_chance) + "-" * 30)
-        train_loop(model, random_move_chance=random_chance, num_games=1000)
+        train_loop(model, random_move_chance=random_chance, num_games=10)
+
+    save_model(model)
 
     run_game_vs_network(model)
 
@@ -608,5 +625,9 @@ def fill_train_test_matrix(total_train, total_test, result_game_matrix, train_ga
         total_test[index: index + test.shape[0], :] = test
         index = index + test.shape[0]
 
+def play_loaded_model():
+    model = load_model()
+    run_game_vs_network(model)
 
-train_network()
+# train_network()
+play_loaded_model()
