@@ -13,8 +13,8 @@ def network_model():
 
 
 def create_model():
-    # activation_function = LeakyReLU(alpha=0.2,name='leakyRelu')
-    activation_function = 'relu'
+    activation_function = LeakyReLU(alpha=0.2,name='leakyRelu')
+    # activation_function = 'sigmoid'
 
     model = Sequential()
 
