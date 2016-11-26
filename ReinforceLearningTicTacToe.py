@@ -34,19 +34,21 @@ def inputPlayerLetter(is_training_game=False):
     # Returns a list with the player's letter as the first item, and the computer's letter as the second.
     if is_training_game:
         if random.randint(0, 1) == 1:
-            return ['X', 'O']
+            return ['X', 'O', False]
         else:
-            return ['O', 'X']
+            return ['O', 'X', False]
     letter = ''
-    while not (letter == 'X' or letter == 'O'):
-        print('Do you want to be X or O?')
+    while not (letter == 'X' or letter == 'O' or letter == 'A'):
+        print('Do you want to be X or O? A for autoplay')
         letter = input().upper()
 
     # the first element in the tuple is the player's letter, the second is the computer's letter.
     if letter == 'X':
-        return ['X', 'O']
+        return ['X', 'O', False]
+    elif letter == 'O':
+        return ['O', 'X', False]
     else:
-        return ['O', 'X']
+        return ['X', 'O', True]
 
 
 def whoGoesFirst():
@@ -127,12 +129,12 @@ def getComputerMove(board, computerLetter):
 
     # Here is our algorithm for our Tic Tac Toe AI:
     # First, check if we can win in the next move
-    # for i in range(1, 10):
-    #     copy = getBoardCopy(board)
-    #     if isSpaceFree(copy, i):
-    #         makeMove(copy, computerLetter, i)
-    #         if isWinner(copy, computerLetter):
-    #             return i
+    for i in range(1, 10):
+        copy = getBoardCopy(board)
+        if isSpaceFree(copy, i):
+            makeMove(copy, computerLetter, i)
+            if isWinner(copy, computerLetter):
+                return i
     #
     # # Check if the player could win on his next move, and block them.
     # for i in range(1, 10):
@@ -176,11 +178,11 @@ def print_status(show_print_output, move, board_vector):
 def init_game(is_training_game, num_plays):
     board_vector = vgs.init_board_state_vector()
     the_board = [' '] * 10
-    player_letter, computer_letter = inputPlayerLetter(is_training_game)
+    player_letter, computer_letter, ai_vs_ai = inputPlayerLetter(is_training_game)
     turn = whoGoesFirst()
     game_is_playing = True
 
-    return board_vector, the_board, turn, player_letter, computer_letter, game_is_playing
+    return board_vector, the_board, turn, player_letter, computer_letter, game_is_playing, ai_vs_ai
 
 
 def run_game_loop_train(show_print_output, is_training_game, num_games, train_matrix_size):
@@ -197,7 +199,7 @@ def run_game_loop_train(show_print_output, is_training_game, num_games, train_ma
 
         (board_vector, the_board, turn,
          player_letter, computer_letter,
-         game_is_playing) = init_game(is_training_game, train_matrix_size)
+         game_is_playing, ai_vs_ai) = init_game(is_training_game, train_matrix_size)
 
         first_player = turn
 
@@ -300,7 +302,6 @@ def network_make_move(network, random_chance, board_vector, the_board, letter_x_
 
 def run_game_loop_net_vs_net(show_print_output, is_training_game, num_games, train_matrix_size, network_model,
                              random_move_chance):
-
     index_train = 0
     number_of_games = 0
 
@@ -320,8 +321,9 @@ def run_game_loop_net_vs_net(show_print_output, is_training_game, num_games, tra
 
         (board_vector, the_board, turn,
          player_letter, computer_letter,
-         game_is_playing) = init_game(is_training_game, train_matrix_size)
+         game_is_playing, ai_vs_ai) = init_game(is_training_game, train_matrix_size)
 
+        # turn = 'player'
         first_player = turn
 
         vgs.add_move_to_game_matrix(index_train, train_games_matrix_player_1, board_vector)
@@ -337,7 +339,7 @@ def run_game_loop_net_vs_net(show_print_output, is_training_game, num_games, tra
                 if show_print_output:
                     drawBoard(the_board)
 
-                move = network_make_move(network_model, random_move_chance, board_vector, the_board, player_letter)
+                move = network_make_move(network_model, 0, board_vector, the_board, player_letter)
 
                 board_vector = vgs.set_board_state_vector(True, move, board_vector)
 
@@ -358,8 +360,8 @@ def run_game_loop_net_vs_net(show_print_output, is_training_game, num_games, tra
                                            start_index, index_train,
                                            first_player)
 
-                    number_of_games += 1
                     index_player_1_game += 1
+                    number_of_games += 1
                     game_is_playing = False
                 else:
                     if isBoardFull(the_board):
@@ -410,13 +412,10 @@ def run_game_loop_net_vs_net(show_print_output, is_training_game, num_games, tra
                         turn = 'player'
 
         if number_of_games == num_games:
-            if player_1_loses < player_2_loses:
-                # print("Player 1 wins most games")
-                # print("Plays during game", train_games_matrix_player_1[:10])
-                # print("Player 1", player_1_loses)
-                # print("Player 2", player_2_loses)
-                # print("Num games", number_of_games)
-                print("Loses ", player_1_loses, player_2_loses ," Tied games" ,num_games - (player_1_loses + player_2_loses))
+            if player_1_loses < player_2_loses or player_1_loses == player_2_loses or True:
+
+                print("Loses ", player_1_loses, player_2_loses, " Tied games",
+                      num_games - (player_1_loses + player_2_loses))
                 return index_train, train_games_matrix_player_1, result_game_vector_player_1[
                                                                  :index_player_1_game], index_player_1_game
             else:
@@ -436,29 +435,34 @@ def run_game_vs_network(network):
 
     while True:
         # Reset the board
-        theBoard = [' '] * 10
-        playerLetter, computerLetter = inputPlayerLetter()
+        the_board = [' '] * 10
+        player_letter, computer_letter, ai_vs_ai = inputPlayerLetter()
         turn = whoGoesFirst()
         # turn = "computer"
         print('The ' + turn + ' will go first.')
-        gameIsPlaying = True
+        game_is_playing = True
         board_vector = vgs.init_board_state_vector()
 
-        while gameIsPlaying:
+        while game_is_playing:
             if turn == 'player':
                 # Player's turn.
-                drawBoard(theBoard)
-                move = getPlayerMove(theBoard)
-                board_vector = vgs.set_board_state_vector(False, move, board_vector)
-                makeMove(theBoard, playerLetter, move)
-
-                if isWinner(theBoard, playerLetter):
-                    drawBoard(theBoard)
-                    print('Hooray! You have won the game!')
-                    gameIsPlaying = False
+                drawBoard(the_board)
+                if ai_vs_ai:
+                    move = network_make_move(network, 0, -board_vector, the_board, computer_letter)
                 else:
-                    if isBoardFull(theBoard):
-                        drawBoard(theBoard)
+                    move = getPlayerMove(the_board)
+
+                print("YOU MADE MOVE", move)
+                board_vector = vgs.set_board_state_vector(False, move, board_vector)
+                makeMove(the_board, player_letter, move)
+
+                if isWinner(the_board, player_letter):
+                    drawBoard(the_board)
+                    print('Hooray! You have won the game!')
+                    game_is_playing = False
+                else:
+                    if isBoardFull(the_board):
+                        drawBoard(the_board)
                         print('The game is a tie!')
                         break
                     else:
@@ -467,29 +471,20 @@ def run_game_vs_network(network):
             else:
                 # Computer's turn.
 
-                network_action = network.predict(board_vector)
-                move = network_action.argmax() + 1
-                while True:
-                    if isSpaceFree(theBoard, move):
-                        break
-                    else:
-                        network_action[0, move - 1] = 0
-                        print(network_action)
-                        move = network_action.argmax() + 1
+                move = network_make_move(network, 100, board_vector, the_board, computer_letter)
 
-                print(network_action)
                 print("COMPUTER MAKES MOVE", move)
                 board_vector = vgs.set_board_state_vector(True, move, board_vector)
 
-                makeMove(theBoard, computerLetter, move)
+                makeMove(the_board, computer_letter, move)
 
-                if isWinner(theBoard, computerLetter):
-                    drawBoard(theBoard)
+                if isWinner(the_board, computer_letter):
+                    drawBoard(the_board)
                     print('The computer has beaten you! You lose.')
-                    gameIsPlaying = False
+                    game_is_playing = False
                 else:
-                    if isBoardFull(theBoard):
-                        drawBoard(theBoard)
+                    if isBoardFull(the_board):
+                        drawBoard(the_board)
                         print('The game is a tie!')
                         break
                     else:
@@ -507,7 +502,7 @@ def train_loop(model, random_move_chance, num_games):
             num_games=num_games,
             train_matrix_size=100000000,
             network_model=model,
-            random_move_chance=1)
+            random_move_chance=random_move_chance)
 
         # print(result_game_matrix)
 
@@ -521,11 +516,13 @@ def train_loop(model, random_move_chance, num_games):
                   nb_epoch=1,
                   batch_size=1)
 
+
 def load_model():
     # load json and create model
     loaded_model = network.create_model()
     loaded_model.load_weights("model.h5")
     return loaded_model
+
 
 def save_model(model):
     # serialize model to JSON
@@ -533,12 +530,10 @@ def save_model(model):
     model.save('model.h5')
 
 
-
-
 def train_network():
     max_index, train_games_matrix, result_game_matrix, num_tie_games = run_game_loop_train(show_print_output=False,
                                                                                            is_training_game=True,
-                                                                                           num_games=1,
+                                                                                           num_games=10000,
                                                                                            train_matrix_size=100000000)
     # init model
     model = network.network_model()
@@ -552,11 +547,11 @@ def train_network():
               nb_epoch=1,
               batch_size=1)
 
-    for random_chance in range(2, 18):
+    for random_chance in range(2, 10):
         print("-" * 30 + "Starting run " + str(random_chance) + "-" * 30)
-        train_loop(model, random_move_chance=random_chance, num_games=10)
+        train_loop(model, random_move_chance=4, num_games=1000)
 
-    save_model(model)
+    # save_model(model)
 
     run_game_vs_network(model)
 
@@ -625,9 +620,11 @@ def fill_train_test_matrix(total_train, total_test, result_game_matrix, train_ga
         total_test[index: index + test.shape[0], :] = test
         index = index + test.shape[0]
 
+
 def play_loaded_model():
     model = load_model()
     run_game_vs_network(model)
 
-# train_network()
-play_loaded_model()
+
+train_network()
+# play_loaded_model()
