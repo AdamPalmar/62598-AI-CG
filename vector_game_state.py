@@ -86,5 +86,3 @@ def test():
     print("-"*5)
     print(board)
     print(-board)
-
-# test()

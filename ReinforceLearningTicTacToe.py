@@ -323,7 +323,7 @@ def run_game_loop_net_vs_net(show_print_output, is_training_game, num_games, tra
          player_letter, computer_letter,
          game_is_playing, ai_vs_ai) = init_game(is_training_game, train_matrix_size)
 
-        # turn = 'player'
+        turn = 'player'
         first_player = turn
 
         vgs.add_move_to_game_matrix(index_train, train_games_matrix_player_1, board_vector)
@@ -412,7 +412,7 @@ def run_game_loop_net_vs_net(show_print_output, is_training_game, num_games, tra
                         turn = 'player'
 
         if number_of_games == num_games:
-            if player_1_loses < player_2_loses or player_1_loses == player_2_loses or True:
+            if player_1_loses < player_2_loses or player_1_loses == player_2_loses:
 
                 print("Loses ", player_1_loses, player_2_loses, " Tied games",
                       num_games - (player_1_loses + player_2_loses))
@@ -438,7 +438,8 @@ def run_game_vs_network(network):
         the_board = [' '] * 10
         player_letter, computer_letter, ai_vs_ai = inputPlayerLetter()
         turn = whoGoesFirst()
-        # turn = "computer"
+        turn = "computer"
+
         print('The ' + turn + ' will go first.')
         game_is_playing = True
         board_vector = vgs.init_board_state_vector()
@@ -448,7 +449,7 @@ def run_game_vs_network(network):
                 # Player's turn.
                 drawBoard(the_board)
                 if ai_vs_ai:
-                    move = network_make_move(network, 0, -board_vector, the_board, computer_letter)
+                    move = network_make_move(network, 1, -board_vector, the_board, computer_letter)
                 else:
                     move = getPlayerMove(the_board)
 
@@ -547,7 +548,7 @@ def train_network():
               nb_epoch=1,
               batch_size=1)
 
-    for random_chance in range(2, 10):
+    for random_chance in range(2, 15):
         print("-" * 30 + "Starting run " + str(random_chance) + "-" * 30)
         train_loop(model, random_move_chance=4, num_games=1000)
 
