@@ -339,7 +339,7 @@ def run_game_loop_net_vs_net(show_print_output, is_training_game, num_games, tra
                 if show_print_output:
                     drawBoard(the_board)
 
-                move = network_make_move(network_model, 0, board_vector, the_board, player_letter)
+                move = network_make_move(network_model, random_move_chance, board_vector, the_board, player_letter)
 
                 board_vector = vgs.set_board_state_vector(True, move, board_vector)
 
@@ -412,6 +412,7 @@ def run_game_loop_net_vs_net(show_print_output, is_training_game, num_games, tra
                         turn = 'player'
 
         if number_of_games == num_games:
+            print("Whatwhat")
             if player_1_loses < player_2_loses or player_1_loses == player_2_loses:
 
                 print("Loses ", player_1_loses, player_2_loses, " Tied games",
