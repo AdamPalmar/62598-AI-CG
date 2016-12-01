@@ -6,15 +6,11 @@ import numpy as np
 
 def network_model():
     model = create_model()
-
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
     return model
-
 
 def create_model():
     activation_function = LeakyReLU(alpha=0.2,name='leakyRelu')
-    # activation_function = 'sigmoid'
 
     model = Sequential()
 

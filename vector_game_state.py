@@ -55,22 +55,20 @@ def test():
     board = init_board_state_vector()
     training = init_training_game_matrix(9)
 
-    board = set_board_state_vector(True, 1, board)
-    add_move_to_game_matrix(0, training, board)
 
-    board = set_board_state_vector(False, 2, board)
+    board = set_board_state_vector(False, 1, board)
     add_move_to_game_matrix(1, training, board)
 
     board = set_board_state_vector(True, 3, board)
     add_move_to_game_matrix(2, training, board)
 
-    board = set_board_state_vector(False, 4, board)
+    board = set_board_state_vector(False, 2, board)
     add_move_to_game_matrix(3, training, board)
 
     board = set_board_state_vector(True, 5, board)
     add_move_to_game_matrix(4, training, board)
 
-    board = set_board_state_vector(False, 6, board)
+    board = set_board_state_vector(False, 4, board)
     add_move_to_game_matrix(5, training, board)
 
     board = set_board_state_vector(True, 7, board)
@@ -79,10 +77,9 @@ def test():
     board = set_board_state_vector(False, 8, board)
     add_move_to_game_matrix(7, training, board)
 
-    board = set_board_state_vector(True, 9, board)
-    add_move_to_game_matrix(8, training, board)
 
     print(training)
     print("-"*5)
     print(board)
     print(-board)
+# test()

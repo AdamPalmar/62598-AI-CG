@@ -129,12 +129,12 @@ def getComputerMove(board, computerLetter):
 
     # Here is our algorithm for our Tic Tac Toe AI:
     # First, check if we can win in the next move
-    for i in range(1, 10):
-        copy = getBoardCopy(board)
-        if isSpaceFree(copy, i):
-            makeMove(copy, computerLetter, i)
-            if isWinner(copy, computerLetter):
-                return i
+    # for i in range(1, 10):
+    #     copy = getBoardCopy(board)
+    #     if isSpaceFree(copy, i):
+    #         makeMove(copy, computerLetter, i)
+    #         if isWinner(copy, computerLetter):
+    #             return i
     #
     # # Check if the player could win on his next move, and block them.
     # for i in range(1, 10):
@@ -412,8 +412,9 @@ def run_game_loop_net_vs_net(show_print_output, is_training_game, num_games, tra
                         turn = 'player'
 
         if number_of_games == num_games:
-            print("Whatwhat")
-            if player_1_loses < player_2_loses or player_1_loses == player_2_loses:
+            # print(number_of_games, "Number of games")
+            # print("Player 1 losses", player_1_loses, "Player 2 losses" , player_2_loses)
+            if player_1_loses < player_2_loses or player_1_loses == player_2_loses or (num_games - (player_1_loses + player_2_loses)) > 10:
 
                 print("Loses ", player_1_loses, player_2_loses, " Tied games",
                       num_games - (player_1_loses + player_2_loses))
@@ -551,7 +552,7 @@ def train_network():
 
     for random_chance in range(2, 15):
         print("-" * 30 + "Starting run " + str(random_chance) + "-" * 30)
-        train_loop(model, random_move_chance=4, num_games=1000)
+        train_loop(model, random_move_chance=3, num_games=1000)
 
     # save_model(model)
 
